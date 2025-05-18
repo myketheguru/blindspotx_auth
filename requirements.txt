@@ -1,0 +1,16 @@
+fastapi
+uvicorn
+sqlmodel
+aiosqlite
+pydantic
+pydantic-settings
+python-jose
+passlib
+bcrypt
+msal
+httpx
+python-multipart
+email-validator
+python-dotenv
+PyJWT
+cryptography
