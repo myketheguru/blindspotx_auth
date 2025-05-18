@@ -1,5 +1,5 @@
 from typing import List, Optional
-from uuid import UUID
+from uuid import UUID, uuid4
 
 from pydantic import EmailStr
 from sqlmodel import Field, Relationship, SQLModel, select
@@ -9,7 +9,7 @@ from sqlalchemy import text, and_, func
 
 class Permission(SQLModel, table=True):
     """Permission model for fine-grained access control"""
-    id: UUID = Field(primary_key=True)
+    id: UUID = Field(default_factory=uuid4, primary_key=True)
     name: str = Field(index=True)
     description: Optional[str] = None
 
@@ -19,7 +19,7 @@ class Permission(SQLModel, table=True):
 
 class Role(SQLModel, table=True):
     """Role model for role-based access control"""
-    id: UUID = Field(primary_key=True)
+    id: UUID = Field(default_factory=uuid4, primary_key=True)
     name: str = Field(index=True)
     description: Optional[str] = None
 
@@ -50,7 +50,7 @@ class UserRole(SQLModel, table=True):
 
 class User(SQLModel, table=True):
     """User model for authentication and authorization"""
-    id: UUID = Field(primary_key=True)
+    id: UUID = Field(default_factory=uuid4, primary_key=True)
     email: EmailStr = Field(unique=True, index=True)
     full_name: Optional[str] = None
     azure_object_id: Optional[str] = Field(unique=True, index=True)

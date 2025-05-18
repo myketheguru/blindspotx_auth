@@ -91,3 +91,20 @@ WHERE user.azure_object_id = ?]
     ]
 [parameters: (UUID('3d265172-0d2a-4334-9491-0232e825922f'),)]
 (Background on this error at: https://sqlalche.me/e/20/f405)
+2025-05-18 07:42:23,489 - app.core.database - INFO - Database and tables created successfully
+2025-05-18 07:42:36,436 - app.core.database - INFO - Value stored securely for key: state:f3aa2b91-c9ca-463a-95c3-5708d5ad1090
+2025-05-18 07:42:38,584 - app.api.routes.auth - INFO - Initiating OAuth2 flow with state: f3aa2b91-c9ca-463a-95c3-5708d5ad1090
+2025-05-18 07:42:53,674 - app.core.database - INFO - Value deleted for key: state:f3aa2b91-c9ca-463a-95c3-5708d5ad1090
+2025-05-18 07:42:54,838 - app.core.database - INFO - Value stored securely for key: refresh_token:3d265172-0d2a-4334-9491-0232e825922f
+2025-05-18 07:42:54,855 - app.core.security - INFO - Access token created for user michael@standardbearersschool.ng, expires at 2025-05-18 10:42:54.855515
+2025-05-18 07:42:54,856 - app.core.security - INFO - Refresh token created for user michael@standardbearersschool.ng, expires at 2025-05-25 06:42:54.856513
+2025-05-18 07:48:54,006 - app.core.database - INFO - Value stored securely for key: state:0700d50e-90e6-49d8-9d1e-1ec0ec935e1d
+2025-05-18 07:48:54,657 - app.api.routes.auth - INFO - Initiating OAuth2 flow with state: 0700d50e-90e6-49d8-9d1e-1ec0ec935e1d
+2025-05-18 08:10:25,227 - app.core.database - INFO - Database and tables created successfully
+2025-05-18 08:11:10,724 - app.core.database - INFO - Database and tables created successfully
+2025-05-18 08:12:31,623 - app.core.database - INFO - Database and tables created successfully
+2025-05-18 08:18:40,764 - app.core.database - INFO - Database and tables created successfully
+2025-05-18 08:21:32,364 - app.core.database - INFO - Database and tables created successfully
+2025-05-18 08:23:40,124 - app.core.database - INFO - Database and tables created successfully
+2025-05-18 08:27:03,873 - app.core.database - INFO - Database and tables created successfully
+2025-05-18 08:28:09,339 - app.core.database - INFO - Database and tables created successfully
