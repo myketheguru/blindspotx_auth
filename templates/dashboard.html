@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Dashboard - BlindspotX{% endblock %}
+
+{% block content %}
+<h2 class="text-2xl font-semibold mb-4">Dashboard</h2>
+<p>Welcome to the BlindspotX Admin Panel</p>
+
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+    <a href="/users" class="bg-white p-4 shadow rounded hover:shadow-lg">
+        <h3 class="text-lg font-bold">Users</h3>
+        <p>Manage system users</p>
+    </a>
+    <a href="/roles" class="bg-white p-4 shadow rounded hover:shadow-lg">
+        <h3 class="text-lg font-bold">Roles</h3>
+        <p>Manage user roles</p>
+    </a>
+    <a href="/permissions" class="bg-white p-4 shadow rounded hover:shadow-lg">
+        <h3 class="text-lg font-bold">Permissions</h3>
+        <p>Manage system permissions</p>
+    </a>
+</div>
+{% endblock %}

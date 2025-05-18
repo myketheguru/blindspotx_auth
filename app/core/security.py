@@ -4,11 +4,14 @@ from datetime import datetime, timedelta
 from typing import Any, Dict, Optional
 
 import jwt
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends, HTTPException, Request, status
 from fastapi.security import OAuth2PasswordBearer
 from pydantic import ValidationError
 
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from app.core.config import settings
+from app.core.database import get_db
 from app.models.user import User, get_user_by_email
 from app.schemas.token import TokenPayload
 
@@ -17,6 +20,7 @@ logger = logging.getLogger(__name__)
 
 # OAuth2 scheme for token validation
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl=f"{settings.API_V1_STR}/auth/login")
+
 
 def create_access_token(subject: str, permissions: list = None, expires_delta: Optional[timedelta] = None) -> str:
     """
@@ -27,45 +31,47 @@ def create_access_token(subject: str, permissions: list = None, expires_delta: O
         expire = datetime.utcnow() + expires_delta
     else:
         expire = datetime.utcnow() + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
-    
+
     to_encode = {
-        "exp": expire, 
+        "exp": expire,
         "sub": str(subject),
         "type": "access"
     }
-    
+
     # Add permissions to the token if provided
     if permissions:
         to_encode["permissions"] = permissions
-    
+
     # Add issued at time for token freshness checks
     to_encode["iat"] = datetime.utcnow()
-    
+
     # Encode the JWT token
     encoded_jwt = jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
-    
+
     # Log token creation (without the actual token)
     logger.info(f"Access token created for user {subject}, expires at {expire}")
-    
+
     return encoded_jwt
+
 
 def create_refresh_token(subject: str) -> str:
     """Create a refresh token with longer expiration"""
     expire = datetime.utcnow() + timedelta(days=settings.REFRESH_TOKEN_EXPIRE_DAYS)
-    
+
     to_encode = {
-        "exp": expire, 
+        "exp": expire,
         "sub": str(subject),
         "type": "refresh",
         "iat": datetime.utcnow()
     }
-    
+
     encoded_jwt = jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
-    
+
     # Log refresh token creation (without the actual token)
     logger.info(f"Refresh token created for user {subject}, expires at {expire}")
-    
+
     return encoded_jwt
+
 
 async def decode_token(token: str) -> Dict[str, Any]:
     """Decode and verify JWT token"""
@@ -74,7 +80,7 @@ async def decode_token(token: str) -> Dict[str, Any]:
             token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM]
         )
         token_data = TokenPayload(**payload)
-        
+
         # Check if token has expired
         if datetime.fromtimestamp(token_data.exp) < datetime.utcnow():
             raise HTTPException(
@@ -82,9 +88,9 @@ async def decode_token(token: str) -> Dict[str, Any]:
                 detail="Token has expired",
                 headers={"WWW-Authenticate": "Bearer"},
             )
-            
+
         return payload
-        
+
     except jwt.PyJWTError as e:
         logger.warning(f"Token validation error: {str(e)}")
         raise HTTPException(
@@ -100,46 +106,57 @@ async def decode_token(token: str) -> Dict[str, Any]:
             headers={"WWW-Authenticate": "Bearer"},
         )
 
-async def get_current_user(token: str = Depends(oauth2_scheme)) -> User:
-    """Get current user from JWT token"""
+
+async def get_current_user(
+    request: Request,
+    token: str = Depends(oauth2_scheme),
+    db: AsyncSession = Depends(get_db)
+) -> User:
+    """
+    Get current user from JWT token.
+    Tries:
+      - Authorization header (API clients)
+      - access_token cookie (browser clients)
+    """
+    # Try getting token from Authorization header first
+    authorization: str = request.headers.get("Authorization")
+    if authorization and authorization.startswith("Bearer "):
+        token = authorization.split(" ")[1]
+    else:
+        # Fallback to cookie
+        token = request.cookies.get("access_token")
+        if token and token.startswith("Bearer "):
+            token = token.split(" ")[1]
+
+    if not token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+
     payload = await decode_token(token)
-    
-    user_id: str = payload.get("sub")
-    if not user_id:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid token payload",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-    
-    # Get user from database
-    user = await get_user_by_email(user_id)
+
+    email: str = payload.get("sub")
+    if email is None:
+        raise HTTPException(status_code=401, detail="Invalid token payload")
+
+    # Fetch user from DB
+    user = await get_user_by_email(email, db)
     if not user:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="User not found",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-    
-    # Check if user is active
+        raise HTTPException(status_code=401, detail="User not found")
+
     if not user.is_active:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Inactive user",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-    
+        raise HTTPException(status_code=403, detail="Inactive user")
+
     return user
+
 
 def verify_permission(required_permission: str):
     """
     Dependency for checking if user has specific permission
-    Usage: 
+    Usage:
         @router.get("/protected", dependencies=[Depends(verify_permission("read:data"))])
     """
     async def has_permission(token: str = Depends(oauth2_scheme)) -> bool:
         payload = await decode_token(token)
-        
+
         # Check if user has required permission
         permissions = payload.get("permissions", [])
         if required_permission not in permissions:
@@ -149,5 +166,5 @@ def verify_permission(required_permission: str):
                 headers={"WWW-Authenticate": "Bearer"},
             )
         return True
-        
+
     return has_permission

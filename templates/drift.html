@@ -1,0 +1,32 @@
+<!-- templates/drift.html -->
+{% extends "base.html" %}
+{% block title %}Drift Reports - BlindspotX{% endblock %}
+
+{% block content %}
+<h2 class="text-2xl font-semibold mb-4">Drift Detection Report</h2>
+
+<table class="w-full bg-white shadow rounded overflow-hidden">
+    <thead class="bg-gray-200">
+        <tr>
+            <th class="p-3 text-left">Change Type</th>
+            <th class="p-3 text-left">Category</th>
+            <th class="p-3 text-left">Key</th>
+            <th class="p-3 text-left">Old Value</th>
+            <th class="p-3 text-left">New Value</th>
+            <th class="p-3 text-left">Timestamp</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for report in reports %}
+        <tr class="border-t hover:bg-gray-50">
+            <td class="p-3">{{ report.change_type }}</td>
+            <td class="p-3">{{ report.category }}</td>
+            <td class="p-3">{{ report.key }}</td>
+            <td class="p-3"><pre class="whitespace-pre-wrap">{{ report.old_value }}</pre></td>
+            <td class="p-3"><pre class="whitespace-pre-wrap">{{ report.new_value }}</pre></td>
+            <td class="p-3">{{ report.timestamp.isoformat() }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

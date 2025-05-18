@@ -108,3 +108,86 @@ WHERE user.azure_object_id = ?]
 2025-05-18 08:23:40,124 - app.core.database - INFO - Database and tables created successfully
 2025-05-18 08:27:03,873 - app.core.database - INFO - Database and tables created successfully
 2025-05-18 08:28:09,339 - app.core.database - INFO - Database and tables created successfully
+2025-05-18 08:30:45,997 - app.core.database - INFO - Database and tables created successfully
+2025-05-18 09:03:32,052 - __main__ - INFO - Starting BlindspotX Authentication Server
+2025-05-18 09:03:34,696 - app.core.database - INFO - Database and tables created successfully
+2025-05-18 09:04:04,003 - app.core.database - INFO - Value stored securely for key: state:ba9cf14c-f96b-4ba6-99da-1f466972f80a
+2025-05-18 09:04:06,801 - app.api.routes.auth - INFO - Initiating OAuth2 flow with state: ba9cf14c-f96b-4ba6-99da-1f466972f80a
+2025-05-18 09:05:59,554 - app.core.database - INFO - Value stored securely for key: state:fe1a3b13-dfbe-44a8-a9f4-2a612bfd2fef
+2025-05-18 09:06:00,265 - app.api.routes.auth - INFO - Initiating OAuth2 flow with state: fe1a3b13-dfbe-44a8-a9f4-2a612bfd2fef
+2025-05-18 09:06:17,987 - app.core.database - INFO - Value deleted for key: state:fe1a3b13-dfbe-44a8-a9f4-2a612bfd2fef
+2025-05-18 09:06:19,057 - app.core.database - INFO - Value stored securely for key: refresh_token:3d265172-0d2a-4334-9491-0232e825922f
+2025-05-18 09:06:19,080 - app.core.security - INFO - Access token created for user michael@standardbearersschool.ng, expires at 2025-05-18 12:06:19.080754
+2025-05-18 09:06:19,101 - app.core.security - INFO - Refresh token created for user michael@standardbearersschool.ng, expires at 2025-05-25 08:06:19.101348
+2025-05-18 09:12:18,737 - app.core.database - INFO - Database and tables created successfully
+2025-05-18 09:23:43,935 - app.core.database - INFO - Database and tables created successfully
+2025-05-18 09:23:45,142 - app.core.database - INFO - Value stored securely for key: state:4309fbdf-410f-4665-ad62-dcd6a0842dd1
+2025-05-18 09:23:47,128 - app.api.routes.auth - INFO - Initiating OAuth2 flow with state: 4309fbdf-410f-4665-ad62-dcd6a0842dd1
+2025-05-18 09:23:59,570 - app.core.database - INFO - Value deleted for key: state:4309fbdf-410f-4665-ad62-dcd6a0842dd1
+2025-05-18 09:24:00,737 - app.core.database - INFO - Value stored securely for key: refresh_token:3d265172-0d2a-4334-9491-0232e825922f
+2025-05-18 09:24:00,747 - app.core.security - INFO - Access token created for user michael@standardbearersschool.ng, expires at 2025-05-18 12:24:00.747738
+2025-05-18 09:24:00,748 - app.core.security - INFO - Refresh token created for user michael@standardbearersschool.ng, expires at 2025-05-25 08:24:00.748734
+2025-05-18 09:25:33,701 - app.core.database - INFO - Database and tables created successfully
+2025-05-18 09:25:56,439 - app.core.database - INFO - Database and tables created successfully
+2025-05-18 09:26:14,695 - app.core.database - INFO - Database and tables created successfully
+2025-05-18 09:26:47,643 - app.core.database - INFO - Value stored securely for key: state:d1f9bc16-5b0b-4b76-8cea-0d30ceb9827a
+2025-05-18 09:26:49,736 - app.api.routes.auth - INFO - Initiating OAuth2 flow with state: d1f9bc16-5b0b-4b76-8cea-0d30ceb9827a
+2025-05-18 09:26:54,043 - app.core.database - INFO - Value deleted for key: state:d1f9bc16-5b0b-4b76-8cea-0d30ceb9827a
+2025-05-18 09:26:55,097 - app.core.database - INFO - Value stored securely for key: refresh_token:3d265172-0d2a-4334-9491-0232e825922f
+2025-05-18 09:26:55,105 - app.core.security - INFO - Access token created for user michael@standardbearersschool.ng, expires at 2025-05-18 12:26:55.104611
+2025-05-18 09:26:55,106 - app.core.security - INFO - Refresh token created for user michael@standardbearersschool.ng, expires at 2025-05-25 08:26:55.105609
+2025-05-18 09:41:28,338 - app.core.database - INFO - Database and tables created successfully
+2025-05-18 09:41:47,761 - app.core.database - INFO - Value stored securely for key: state:238a1f6a-d410-465b-835b-74d96cfad4ea
+2025-05-18 09:41:49,867 - app.api.routes.auth - INFO - Initiating OAuth2 flow with state: 238a1f6a-d410-465b-835b-74d96cfad4ea
+2025-05-18 09:41:54,844 - app.core.database - INFO - Value deleted for key: state:238a1f6a-d410-465b-835b-74d96cfad4ea
+2025-05-18 09:41:55,880 - app.core.database - INFO - Value stored securely for key: refresh_token:3d265172-0d2a-4334-9491-0232e825922f
+2025-05-18 09:41:55,888 - app.core.security - INFO - Access token created for user michael@standardbearersschool.ng, expires at 2025-05-18 12:41:55.887804
+2025-05-18 09:41:55,889 - app.core.security - INFO - Refresh token created for user michael@standardbearersschool.ng, expires at 2025-05-25 08:41:55.888802
+2025-05-18 09:44:47,831 - app.core.database - INFO - Value stored securely for key: state:8e2e6203-d13c-4b9a-b3fb-08cafe589123
+2025-05-18 09:44:48,638 - app.api.routes.auth - INFO - Initiating OAuth2 flow with state: 8e2e6203-d13c-4b9a-b3fb-08cafe589123
+2025-05-18 09:44:54,586 - app.core.database - INFO - Value deleted for key: state:8e2e6203-d13c-4b9a-b3fb-08cafe589123
+2025-05-18 09:44:55,659 - app.core.database - INFO - Value stored securely for key: refresh_token:3d265172-0d2a-4334-9491-0232e825922f
+2025-05-18 09:44:55,675 - app.core.security - INFO - Access token created for user michael@standardbearersschool.ng, expires at 2025-05-18 12:44:55.675788
+2025-05-18 09:44:55,694 - app.core.security - INFO - Refresh token created for user michael@standardbearersschool.ng, expires at 2025-05-25 08:44:55.694344
+2025-05-18 09:48:23,481 - app.core.database - ERROR - Database error: 401: Not authenticated
+2025-05-18 09:56:28,430 - app.core.database - INFO - Database and tables created successfully
+2025-05-18 09:56:50,100 - app.core.database - INFO - Database and tables created successfully
+2025-05-18 10:03:17,571 - app.core.database - INFO - Value stored securely for key: state:b6e918d0-1cb8-4079-bb2e-d6215a688da1
+2025-05-18 10:03:19,924 - app.api.routes.auth - INFO - Initiating OAuth2 flow with state: b6e918d0-1cb8-4079-bb2e-d6215a688da1
+2025-05-18 10:03:25,914 - app.core.database - INFO - Value deleted for key: state:b6e918d0-1cb8-4079-bb2e-d6215a688da1
+2025-05-18 10:03:27,010 - app.core.database - INFO - Value stored securely for key: refresh_token:3d265172-0d2a-4334-9491-0232e825922f
+2025-05-18 10:03:27,033 - app.core.security - INFO - Access token created for user michael@standardbearersschool.ng, expires at 2025-05-18 13:03:27.031883
+2025-05-18 10:03:27,034 - app.core.security - INFO - Refresh token created for user michael@standardbearersschool.ng, expires at 2025-05-25 09:03:27.034882
+2025-05-18 10:05:55,671 - __main__ - INFO - Starting BlindspotX Authentication Server
+2025-05-18 10:05:59,227 - app.core.database - INFO - Database and tables created successfully
+2025-05-18 10:33:07,134 - app.core.database - INFO - Database and tables created successfully
+2025-05-18 10:36:56,183 - app.core.database - INFO - Database and tables created successfully
+2025-05-18 10:37:23,013 - app.core.database - INFO - Database and tables created successfully
+2025-05-18 10:39:56,529 - app.core.database - INFO - Database and tables created successfully
+2025-05-18 10:47:23,449 - app.core.database - INFO - Database and tables created successfully
+2025-05-18 10:49:07,384 - app.core.database - INFO - Database and tables created successfully
+2025-05-18 10:49:07,460 - asyncio - ERROR - Task exception was never retrieved
+future: <Task finished name='Task-5' coro=<run_drift_detection_job() done, defined at C:\Users\bethel-babashola\Documents\darkmyke\blindspot-assessments\blindspotx_auth\app\main.py:70> exception=NameError("name 'detect_drift' is not defined")>
+Traceback (most recent call last):
+  File "C:\Users\bethel-babashola\Documents\darkmyke\blindspot-assessments\blindspotx_auth\app\main.py", line 72, in run_drift_detection_job
+    await detect_drift()
+          ^^^^^^^^^^^^
+NameError: name 'detect_drift' is not defined
+2025-05-18 10:51:24,731 - app.core.database - INFO - Database and tables created successfully
+2025-05-18 10:51:24,803 - app.services.drift_service - INFO - Starting drift detection job
+2025-05-18 10:51:24,805 - app.services.drift_service - ERROR - Error during drift detection: name 'get_mal_app' is not defined
+2025-05-18 10:52:17,132 - app.core.database - INFO - Database and tables created successfully
+2025-05-18 10:52:17,190 - app.services.drift_service - INFO - Starting drift detection job
+2025-05-18 10:52:20,779 - app.services.drift_service - ERROR - Error during drift detection: name 'settings' is not defined
+2025-05-18 10:53:32,102 - app.core.database - INFO - Database and tables created successfully
+2025-05-18 10:53:32,163 - app.services.drift_service - INFO - Starting drift detection job
+2025-05-18 10:53:34,382 - app.services.drift_service - ERROR - Error during drift detection: 'NoneType' object has no attribute 'get'
+2025-05-18 11:00:06,194 - app.core.database - INFO - Database and tables created successfully
+2025-05-18 11:00:06,270 - app.services.drift_service - INFO - Starting drift detection job
+2025-05-18 11:00:08,316 - app.services.drift_service - WARNING - No cached token found for silent auth
+2025-05-18 11:04:53,440 - app.core.database - INFO - Value stored securely for key: state:1bf13316-c166-4971-b5f2-6d8c7ccc859a
+2025-05-18 11:04:54,320 - app.api.routes.auth - INFO - Initiating OAuth2 flow with state: 1bf13316-c166-4971-b5f2-6d8c7ccc859a
+2025-05-18 11:05:03,890 - app.core.database - INFO - Value deleted for key: state:1bf13316-c166-4971-b5f2-6d8c7ccc859a
+2025-05-18 11:05:05,237 - app.core.database - INFO - Value stored securely for key: refresh_token:3d265172-0d2a-4334-9491-0232e825922f
+2025-05-18 11:05:05,247 - app.core.security - INFO - Access token created for user michael@standardbearersschool.ng, expires at 2025-05-18 14:05:05.247903
+2025-05-18 11:05:05,250 - app.core.security - INFO - Refresh token created for user michael@standardbearersschool.ng, expires at 2025-05-25 10:05:05.250026

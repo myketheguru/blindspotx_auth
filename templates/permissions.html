@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Permissions - BlindspotX{% endblock %}
+
+{% block content %}
+<h2 class="text-2xl font-semibold mb-4">Permissions</h2>
+<table class="w-full bg-white shadow rounded overflow-hidden">
+    <thead class="bg-gray-200">
+        <tr>
+            <th class="p-3 text-left">Name</th>
+            <th class="p-3 text-left">Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for permission in permissions %}
+        <tr class="border-t hover:bg-gray-50">
+            <td class="p-3">{{ permission.name }}</td>
+            <td class="p-3">{{ permission.description or "-" }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

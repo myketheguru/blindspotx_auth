@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Users - BlindspotX{% endblock %}
+
+{% block content %}
+<h2 class="text-2xl font-semibold mb-4">Users</h2>
+<table class="w-full bg-white shadow rounded overflow-hidden">
+    <thead class="bg-gray-200">
+        <tr>
+            <th class="p-3 text-left">Email</th>
+            <th class="p-3 text-left">Full Name</th>
+            <th class="p-3 text-left">Azure ID</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for user in users %}
+        <tr class="border-t hover:bg-gray-50">
+            <td class="p-3">{{ user.email }}</td>
+            <td class="p-3">{{ user.full_name or "-" }}</td>
+            <td class="p-3">{{ user.azure_object_id or "-" }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

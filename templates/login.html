@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block title %}Login - BlindspotX{% endblock %}
+
+{% block content %}
+<div class="max-w-md mx-auto bg-white p-6 rounded shadow mt-20">
+    <h2 class="text-2xl font-semibold mb-4">Login</h2>
+    <a href="/api/auth/login"
+       class="inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+        Sign in with Microsoft
+    </a>
+</div>
+{% endblock %}

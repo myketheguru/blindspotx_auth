@@ -33,15 +33,16 @@ def get_msal_app():
     )
 
 @router.get("/login")
-async def login():
+async def login(request: Request):
     """
-    Initiate OAuth2 login flow with Microsoft Entra ID
-    Returns URL for redirecting user to Microsoft login page
+    Initiate OAuth2 login flow with Microsoft Entra ID.
+    - For browsers: redirects directly to Microsoft login
+    - For API clients: returns the login URL
     """
     # Generate and store state parameter to prevent CSRF
     state = str(uuid.uuid4())
     await secure_store.store_value(f"state:{state}", state, {"created_at": datetime.utcnow().isoformat()})
-    
+
     # Get login URL from MSAL
     msal_app = get_msal_app()
     auth_url = msal_app.get_authorization_request_url(
@@ -49,11 +50,17 @@ async def login():
         state=state,
         redirect_uri=settings.MS_REDIRECT_URI
     )
-    
+
     logger.info(f"Initiating OAuth2 flow with state: {state}")
-    
-    # Return the authorization URL
-    return {"login_url": auth_url}
+
+    # Detect if it's a browser request
+    accept_header = request.headers.get("accept", "")
+    if "text/html" in accept_header:
+        # Browser: redirect to Microsoft login
+        return RedirectResponse(url=auth_url)
+    else:
+        # API client: return the URL
+        return {"login_url": auth_url}
 
 @router.get("/callback")
 async def auth_callback(
@@ -75,7 +82,7 @@ async def auth_callback(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"Authentication failed: {error_description}"
         )
-    
+
     # Validate state parameter to prevent CSRF
     if not state:
         logger.warning("Missing state parameter in OAuth callback")
@@ -83,7 +90,7 @@ async def auth_callback(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Missing state parameter"
         )
-    
+
     stored_state = await secure_store.get_value(f"state:{state}")
     if not stored_state or stored_state != state:
         logger.warning(f"Invalid state parameter: {state}")
@@ -91,10 +98,10 @@ async def auth_callback(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Invalid state parameter"
         )
-    
+
     # Clean up stored state
     await secure_store.delete_value(f"state:{state}")
-    
+
     # Exchange code for tokens
     if not code:
         logger.warning("Missing authorization code in OAuth callback")
@@ -102,7 +109,7 @@ async def auth_callback(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Missing authorization code"
         )
-    
+
     # Get tokens from Microsoft
     msal_app = get_msal_app()
     result = msal_app.acquire_token_by_authorization_code(
@@ -110,7 +117,7 @@ async def auth_callback(
         scopes=settings.MS_SCOPES,
         redirect_uri=settings.MS_REDIRECT_URI
     )
-    
+
     # Check for errors in token response
     if "error" in result:
         logger.error(f"Error acquiring token: {result.get('error')} - {result.get('error_description')}")
@@ -118,26 +125,21 @@ async def auth_callback(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"Error acquiring token: {result.get('error_description')}"
         )
-    
+
     # Extract tokens and user info
     access_token = result.get("access_token")
     refresh_token = result.get("refresh_token")
     id_token = result.get("id_token")
     expires_in = result.get("expires_in", 3600)
-    
+
     # Decode the ID token to get user info
     user_info = {}
     if id_token:
         try:
-            # ID token is a JWT, split and decode the payload (middle part)
-            # Note: This doesn't verify the token signature as it's already verified by MSAL
             id_token_parts = id_token.split('.')
             if len(id_token_parts) >= 2:
-                # Add padding if needed
                 padded = id_token_parts[1] + '=' * (4 - len(id_token_parts[1]) % 4)
                 payload = json.loads(base64.b64decode(padded).decode('utf-8'))
-                
-                # Extract user information
                 user_info = {
                     "object_id": payload.get("oid"),
                     "email": payload.get("preferred_username") or payload.get("email"),
@@ -145,13 +147,13 @@ async def auth_callback(
                 }
         except Exception as e:
             logger.warning(f"Error decoding ID token: {str(e)}")
-    
+
     # If ID token wasn't available or couldn't be decoded, fetch user info using Graph API
     if not user_info.get("email") and access_token:
         try:
             async with httpx.AsyncClient() as client:
                 response = await client.get(
-                    "https://graph.microsoft.com/v1.0/me",
+                    "https://graph.microsoft.com/v1.0/me ",
                     headers={"Authorization": f"Bearer {access_token}"}
                 )
                 if response.status_code == 200:
@@ -165,7 +167,7 @@ async def auth_callback(
                     logger.warning(f"Error fetching user info from Graph API: {response.status_code} {response.text}")
         except Exception as e:
             logger.warning(f"Error calling Microsoft Graph API: {str(e)}")
-    
+
     # Ensure we have at least email
     if not user_info.get("email"):
         logger.error("Could not obtain user email from tokens or Graph API")
@@ -173,15 +175,12 @@ async def auth_callback(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Could not obtain user information"
         )
-    
+
     # Check if user exists, create if not
     user = await get_user_by_azure_id(user_info.get("object_id"))
     if not user:
-        # Check if user exists with email
         user = await get_user_by_email(user_info.get("email"))
-        
         if not user:
-            # Create new user
             user_data = {
                 "email": user_info.get("email"),
                 "full_name": user_info.get("name"),
@@ -191,7 +190,6 @@ async def auth_callback(
             user = await create_user(user_data, db)
             logger.info(f"Created new user: {user.email}")
         else:
-            # Update existing user with Azure Object ID
             user.azure_object_id = user_info.get("object_id")
             if user_info.get("name"):
                 user.full_name = user_info.get("name")
@@ -199,8 +197,8 @@ async def auth_callback(
             await db.commit()
             await db.refresh(user)
             logger.info(f"Updated existing user with Azure ID: {user.email}")
-    
-    # Store refresh token securely (encrypted in database)
+
+    # Store refresh token securely
     if refresh_token:
         await secure_store.store_value(
             f"refresh_token:{user.id}", 
@@ -210,32 +208,46 @@ async def auth_callback(
                 "created_at": datetime.utcnow().isoformat()
             }
         )
-    
+
     # Get user permissions
     permissions = await get_user_permissions(user.id, db)
-    
+
     # Create our own access and refresh tokens
     access_token = create_access_token(
         subject=user.email,
         permissions=permissions,
         expires_delta=timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     )
-    
     refresh_token = create_refresh_token(subject=user.email)
-    
-    # Return tokens in response
-    token_response = Token(
-        access_token=access_token,
-        refresh_token=refresh_token,
-        token_type="bearer",
-        expires_in=settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60
-    )
-    
-    # Redirect to frontend with tokens (in production, use a more secure method)
-    frontend_url = "http://localhost:3000/auth/callback"
-    redirect_url = f"{frontend_url}?access_token={access_token}&refresh_token={refresh_token}&expires_in={settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60}"
-    
-    return RedirectResponse(url=redirect_url)
+
+    # Determine if it's a browser or API client
+    accept_header = request.headers.get("accept", "")
+
+    if "text/html" in accept_header:
+        # 🧑‍💻 Browser: Set a secure cookie and redirect
+        is_secure = settings.ENVIRONMENT != "local"
+        response = RedirectResponse(url="/dashboard")
+        response.set_cookie(
+            key="access_token",
+            value=f"Bearer {access_token}",
+            httponly=True,
+            secure=is_secure,  # Set secure=True only in non-local environments
+            samesite="lax" if is_secure else "strict",
+            max_age=settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60,
+            path="/",
+        )
+
+        return response
+    else:
+        # 💻 API Client: Return tokens in JSON
+        token_response = Token(
+            access_token=access_token,
+            refresh_token=refresh_token,
+            token_type="bearer",
+            expires_in=settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60
+        )
+        return token_response
+
 
 @router.post("/refresh", response_model=Token)
 async def refresh_token(

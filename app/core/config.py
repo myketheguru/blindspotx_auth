@@ -24,6 +24,7 @@ class Settings(BaseSettings):
 
     USE_KEY_VAULT: bool = False
     KEY_VAULT_NAME: str = ""
+    ENVIRONMENT: str = ""
 
     @computed_field
     @property
