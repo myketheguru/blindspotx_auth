@@ -1,3 +1,93 @@
 2025-05-18 06:02:43,784 - __main__ - INFO - Starting BlindspotX Authentication Server
 2025-05-18 06:02:46,408 - app.core.database - INFO - Database and tables created successfully
 2025-05-18 06:05:09,710 - app.core.database - INFO - Value stored securely for key: state:475a4fa9-74a7-44e7-9c9c-7d6e31cd5860
+2025-05-18 06:40:07,307 - __main__ - INFO - Starting BlindspotX Authentication Server
+2025-05-18 06:40:09,772 - app.core.database - INFO - Database and tables created successfully
+2025-05-18 06:40:24,958 - app.core.database - INFO - Value stored securely for key: state:1dd9c41c-fe18-458f-8305-a5d80b8c3167
+2025-05-18 06:43:38,132 - app.core.database - INFO - Database and tables created successfully
+2025-05-18 06:43:59,314 - app.core.database - INFO - Value stored securely for key: state:820f2740-eabd-4672-8db9-9b4c30e10529
+2025-05-18 06:44:01,038 - app.api.routes.auth - INFO - Initiating OAuth2 flow with state: 820f2740-eabd-4672-8db9-9b4c30e10529
+2025-05-18 06:46:51,185 - app.core.database - INFO - Value deleted for key: state:820f2740-eabd-4672-8db9-9b4c30e10529
+2025-05-18 06:46:52,194 - app.api.routes.auth - INFO - Created new user: michael@standardbearersschool.ng
+2025-05-18 06:46:52,301 - app.core.database - INFO - Value stored securely for key: refresh_token:8aafd2a4-768e-4ed0-96ca-e38592b1d400
+2025-05-18 06:46:52,467 - app.core.database - ERROR - Database error: Textual SQL expression '\n    SELECT DISTINCT p.na...' should be explicitly declared as text('\n    SELECT DISTINCT p.na...')
+2025-05-18 06:50:16,784 - app.core.database - INFO - Database and tables created successfully
+2025-05-18 06:50:23,437 - app.api.routes.auth - WARNING - Invalid state parameter: 820f2740-eabd-4672-8db9-9b4c30e10529
+2025-05-18 06:50:23,443 - app.core.database - ERROR - Database error: 400: Invalid state parameter
+2025-05-18 06:50:59,623 - app.core.database - INFO - Value stored securely for key: state:c3abbff6-3f38-4bd9-a6e5-5b216479369f
+2025-05-18 06:51:01,576 - app.api.routes.auth - INFO - Initiating OAuth2 flow with state: c3abbff6-3f38-4bd9-a6e5-5b216479369f
+2025-05-18 06:51:14,175 - app.core.database - INFO - Value deleted for key: state:c3abbff6-3f38-4bd9-a6e5-5b216479369f
+2025-05-18 06:51:15,157 - app.core.database - INFO - Value stored securely for key: refresh_token:8aafd2a4-768e-4ed0-96ca-e38592b1d400
+2025-05-18 06:51:15,168 - app.core.database - ERROR - Database error: (sqlite3.OperationalError) no such table: role_permission
+[SQL: 
+    SELECT DISTINCT p.name FROM permission p
+    JOIN role_permission rp ON p.id = rp.permission_id
+    JOIN role r ON rp.role_id = r.id
+    JOIN user_role ur ON r.id = ur.role_id
+    WHERE ur.user_id = ?
+    ]
+[parameters: (UUID('8aafd2a4-768e-4ed0-96ca-e38592b1d400'),)]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2025-05-18 07:05:02,296 - __main__ - INFO - Starting BlindspotX Authentication Server
+2025-05-18 07:05:04,729 - app.core.database - INFO - Database and tables created successfully
+2025-05-18 07:07:55,351 - app.api.routes.auth - WARNING - Invalid state parameter: c3abbff6-3f38-4bd9-a6e5-5b216479369f
+2025-05-18 07:07:55,355 - app.core.database - ERROR - Database error: 400: Invalid state parameter
+2025-05-18 07:08:09,571 - app.core.database - INFO - Value stored securely for key: state:c3fb1c45-471e-4cfe-80c6-c9091f1c34d5
+2025-05-18 07:08:11,680 - app.api.routes.auth - INFO - Initiating OAuth2 flow with state: c3fb1c45-471e-4cfe-80c6-c9091f1c34d5
+2025-05-18 07:08:21,322 - app.core.database - INFO - Value deleted for key: state:c3fb1c45-471e-4cfe-80c6-c9091f1c34d5
+2025-05-18 07:08:22,362 - app.core.database - INFO - Value stored securely for key: refresh_token:8aafd2a4-768e-4ed0-96ca-e38592b1d400
+2025-05-18 07:08:22,372 - app.core.database - ERROR - Database error: (sqlite3.OperationalError) no such table: role_permission
+[SQL: 
+    SELECT DISTINCT p.name FROM permission p
+    JOIN role_permission rp ON p.id = rp.permission_id
+    JOIN role r ON rp.role_id = r.id
+    JOIN user_role ur ON r.id = ur.role_id
+    WHERE ur.user_id = ?
+    ]
+[parameters: (UUID('8aafd2a4-768e-4ed0-96ca-e38592b1d400'),)]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2025-05-18 07:11:51,877 - app.core.database - INFO - Database and tables created successfully
+2025-05-18 07:12:16,216 - app.core.database - INFO - Database and tables created successfully
+2025-05-18 07:14:02,087 - app.core.database - INFO - Database and tables created successfully
+2025-05-18 07:16:13,565 - app.core.database - INFO - Value stored securely for key: state:4fe61079-de0e-4b9a-bd47-fe48d1fdd04f
+2025-05-18 07:16:15,383 - app.api.routes.auth - INFO - Initiating OAuth2 flow with state: 4fe61079-de0e-4b9a-bd47-fe48d1fdd04f
+2025-05-18 07:16:23,704 - app.core.database - INFO - Value deleted for key: state:4fe61079-de0e-4b9a-bd47-fe48d1fdd04f
+2025-05-18 07:16:24,793 - app.core.database - ERROR - Database error: (sqlite3.OperationalError) no such table: user
+[SQL: SELECT user.id, user.email, user.full_name, user.azure_object_id, user.is_active, user.is_superuser 
+FROM user 
+WHERE user.azure_object_id = ?]
+[parameters: ('1de44d69-ac21-4f02-80df-5481bb7db336',)]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2025-05-18 07:27:07,673 - app.core.database - INFO - Database and tables created successfully
+2025-05-18 07:30:56,516 - app.core.database - INFO - Database and tables created successfully
+2025-05-18 07:33:01,582 - app.core.database - INFO - Database and tables created successfully
+2025-05-18 07:33:26,962 - app.core.database - INFO - Value stored securely for key: state:09cf1022-b6e0-48cd-b512-dec0ebf3c57c
+2025-05-18 07:34:44,576 - app.api.routes.auth - INFO - Initiating OAuth2 flow with state: 09cf1022-b6e0-48cd-b512-dec0ebf3c57c
+2025-05-18 07:35:00,744 - app.core.database - INFO - Value deleted for key: state:09cf1022-b6e0-48cd-b512-dec0ebf3c57c
+2025-05-18 07:35:01,963 - app.api.routes.auth - INFO - Created new user: michael@standardbearersschool.ng
+2025-05-18 07:35:01,986 - app.core.database - INFO - Value stored securely for key: refresh_token:3d265172-0d2a-4334-9491-0232e825922f
+2025-05-18 07:35:01,993 - app.core.database - ERROR - Database error: (sqlite3.OperationalError) no such table: user_role
+[SQL: 
+    SELECT DISTINCT p.name FROM permission p
+    JOIN rolepermission rp ON p.id = rp.permission_id
+    JOIN role r ON rp.role_id = r.id
+    JOIN user_role ur ON r.id = ur.role_id
+    WHERE ur.user_id = ?
+    ]
+[parameters: (UUID('3d265172-0d2a-4334-9491-0232e825922f'),)]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2025-05-18 07:37:08,914 - app.core.database - INFO - Database and tables created successfully
+2025-05-18 07:37:23,349 - app.core.database - INFO - Value stored securely for key: state:40ce3824-5b5d-4999-a026-4f5fba7f319b
+2025-05-18 07:37:25,542 - app.api.routes.auth - INFO - Initiating OAuth2 flow with state: 40ce3824-5b5d-4999-a026-4f5fba7f319b
+2025-05-18 07:37:34,839 - app.core.database - INFO - Value deleted for key: state:40ce3824-5b5d-4999-a026-4f5fba7f319b
+2025-05-18 07:37:35,958 - app.core.database - INFO - Value stored securely for key: refresh_token:3d265172-0d2a-4334-9491-0232e825922f
+2025-05-18 07:37:35,964 - app.core.database - ERROR - Database error: (sqlite3.ProgrammingError) Error binding parameter 1: type 'UUID' is not supported
+[SQL: 
+    SELECT DISTINCT p.name FROM permission p
+    JOIN rolepermission rp ON p.id = rp.permission_id
+    JOIN role r ON rp.role_id = r.id
+    JOIN userrole ur ON r.id = ur.role_id
+    WHERE ur.user_id = ?
+    ]
+[parameters: (UUID('3d265172-0d2a-4334-9491-0232e825922f'),)]
+(Background on this error at: https://sqlalche.me/e/20/f405)
