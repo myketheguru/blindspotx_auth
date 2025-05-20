@@ -2,23 +2,69 @@
 {% block title %}Users - BlindspotX{% endblock %}
 
 {% block content %}
-<h2 class="text-2xl font-semibold mb-4">Users</h2>
-<table class="w-full bg-white shadow rounded overflow-hidden">
-    <thead class="bg-gray-200">
-        <tr>
-            <th class="p-3 text-left">Email</th>
-            <th class="p-3 text-left">Full Name</th>
-            <th class="p-3 text-left">Azure ID</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for user in users %}
-        <tr class="border-t hover:bg-gray-50">
-            <td class="p-3">{{ user.email }}</td>
-            <td class="p-3">{{ user.full_name or "-" }}</td>
-            <td class="p-3">{{ user.azure_object_id or "-" }}</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+<!-- Alert Section for feedback messages -->
+<div id="alert-container" class="mb-4 hidden">
+    <div id="alert" class="p-4 rounded"></div>
+</div>
+
+<h1 class="text-3xl font-bold mb-3">User Management</h1>
+
+<!-- <div class="flex justify-between items-center mb-4">
+    <h2 class="text-2xl font-semibold">Users</h2>
+    <button 
+        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+        hx-get="/api/users/create-form"
+        hx-target="#modal-content"
+        hx-trigger="click"
+        onclick="document.getElementById('modal').classList.remove('hidden')">
+        Create User
+    </button>
+</div> -->
+
+<div id="users-table-container">
+    <table class="w-full bg-white shadow rounded overflow-hidden">
+        <thead class="bg-gray-200">
+            <tr>
+                <th class="p-3 text-left">Email</th>
+                <th class="p-3 text-left">Full Name</th>
+                <th class="p-3 text-left">Azure ID</th>
+                <th class="p-3 text-left">Status</th>
+                <!-- <th class="p-3 text-left">Actions</th> -->
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in users %}
+            <tr class="border-t hover:bg-gray-50">
+                <td class="p-3">{{ user.email }}</td>
+                <td class="p-3">{{ user.full_name or "-" }}</td>
+                <td class="p-3">{{ user.azure_object_id or "-" }}</td>
+                <td class="p-3">
+                    <span class="px-2 py-1 text-xs rounded-full 
+                        {% if user.is_active %}bg-green-100 text-green-800{% else %}bg-red-100 text-red-800{% endif %}">
+                        {{ "Active" if user.is_active else "Inactive" }}
+                    </span>
+                </td>
+                <!-- <td class="p-3 flex space-x-2">
+                    <button 
+                        class="bg-yellow-500 hover:bg-yellow-700 text-white py-1 px-2 rounded text-sm"
+                        hx-get="/api/users/{{ user.id }}/edit-form"
+                        hx-target="#modal-content"
+                        hx-trigger="click"
+                        onclick="document.getElementById('modal').classList.remove('hidden')">
+                        Edit
+                    </button>
+                    <button 
+                        class="bg-red-500 hover:bg-red-700 text-white py-1 px-2 rounded text-sm"
+                        hx-get="/api/users/{{ user.id }}/delete-confirm"
+                        hx-target="#modal-content"
+                        hx-trigger="click"
+                        onclick="document.getElementById('modal').classList.remove('hidden')">
+                        Delete
+                    </button>
+                </td> -->
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
 {% endblock %}

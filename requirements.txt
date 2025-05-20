@@ -16,3 +16,11 @@ PyJWT
 cryptography
 alembic
 jinja2
+prometheus-client
+opentelemetry-api
+opentelemetry-sdk
+opentelemetry-instrumentation-fastapi
+opentelemetry-exporter-otlp
+starlette-exporter
+redis
+pytest

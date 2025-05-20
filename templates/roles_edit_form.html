@@ -1,0 +1,49 @@
+<form hx-put="/api/rbac/roles/{{ role.id }}" hx-target="#roles-table-container" hx-swap="outerHTML" class="space-y-4">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    
+    <div>
+        <label for="name" class="block text-sm font-medium text-gray-700">Role Name *</label>
+        <input type="text" name="name" id="name" required value="{{ role.name }}"
+               class="mt-1 block w-full rounded-md border border-gray-300 p-2">
+    </div>
+    
+    <div>
+        <label for="description" class="block text-sm font-medium text-gray-700">Description</label>
+        <textarea name="description" id="description" rows="3"
+               class="mt-1 block w-full rounded-md border border-gray-300 p-2">{{ role.description or '' }}</textarea>
+    </div>
+    
+    {% if 'assign:permissions' in user_permissions %}
+    <div>
+        <label class="block text-sm font-medium text-gray-700">Permissions</label>
+        <div class="mt-1 space-y-2 max-h-48 overflow-y-auto p-2 border border-gray-300 rounded-md">
+            {% for permission in permissions %}
+            <div class="flex items-center">
+                <input type="checkbox" name="permissions" value="{{ permission.id }}" id="permission-{{ permission.id }}"
+                       {% if permission.id in role_permissions %}checked{% endif %}
+                       class="h-4 w-4 rounded border-gray-300 text-blue-600">
+                <label for="permission-{{ permission.id }}" class="ml-2 text-sm text-gray-700">
+                    {{ permission.name }}
+                    {% if permission.description %}
+                    <span class="text-xs text-gray-500">({{ permission.description }})</span>
+                    {% endif %}
+                </label>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+    
+    <div class="flex justify-end space-x-3 pt-4">
+        <button type="button" 
+                class="bg-gray-300 hover:bg-gray-400 text-black font-bold py-2 px-4 rounded"
+                onclick="document.getElementById('modal').classList.add('hidden')">
+            Cancel
+        </button>
+        <button type="submit" 
+                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+            Update Role
+        </button>
+    </div>
+</form>
+

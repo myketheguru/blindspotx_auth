@@ -23,13 +23,29 @@ from app.schemas.token import AzureADToken, RefreshTokenRequest, Token
 router = APIRouter()
 logger = logging.getLogger(__name__)
 
+# Token cache for MSAL
+class TokenCache:
+    def __init__(self):
+        self._cache = msal.SerializableTokenCache()
+
+    def __enter__(self):
+        return self._cache
+
+    def __exit__(self, *args):
+        # Ensure cache is saved when done
+        if self._cache.has_state_changed:
+            # Save cache to secure storage (can be implemented later)
+            pass
+
 # Initialize MSAL confidential client application
 def get_msal_app():
-    """Get MSAL confidential client application"""
+    """Get configured MSAL app instance for both interactive and client credentials flow"""
     return msal.ConfidentialClientApplication(
         client_id=settings.MS_CLIENT_ID,
         client_credential=settings.MS_CLIENT_SECRET,
-        authority=settings.MS_AUTHORITY
+        authority=settings.MS_AUTHORITY,
+        # Enable token cache for both interactive and client credentials flow
+        token_cache=TokenCache()._cache
     )
 
 @router.get("/login")
@@ -46,7 +62,7 @@ async def login(request: Request):
     # Get login URL from MSAL
     msal_app = get_msal_app()
     auth_url = msal_app.get_authorization_request_url(
-        scopes=settings.MS_SCOPES,
+        scopes=settings.PARSED_MS_SCOPES,
         state=state,
         redirect_uri=settings.MS_REDIRECT_URI
     )
@@ -114,7 +130,7 @@ async def auth_callback(
     msal_app = get_msal_app()
     result = msal_app.acquire_token_by_authorization_code(
         code=code,
-        scopes=settings.MS_SCOPES,
+        scopes=settings.PARSED_MS_SCOPES,
         redirect_uri=settings.MS_REDIRECT_URI
     )
 
@@ -213,30 +229,45 @@ async def auth_callback(
     permissions = await get_user_permissions(user.id, db)
 
     # Create our own access and refresh tokens
-    access_token = create_access_token(
+    access_token = await create_access_token(
+        user_id=user.id,
         subject=user.email,
         permissions=permissions,
         expires_delta=timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     )
-    refresh_token = create_refresh_token(subject=user.email)
+    refresh_token = await create_refresh_token(user_id=user.id, subject=user.email)
 
     # Determine if it's a browser or API client
     accept_header = request.headers.get("accept", "")
 
     if "text/html" in accept_header:
-        # 🧑‍💻 Browser: Set a secure cookie and redirect
-        is_secure = settings.ENVIRONMENT != "local"
-        response = RedirectResponse(url="/dashboard")
+        # 🧑‍💻 Browser: Set the cookie directly and redirect to dashboard
+        print(f"Auth callback setting cookie and redirecting to dashboard")
+        
+        # Create redirect response with proper status code to maintain cookie
+        response = RedirectResponse(url="/dashboard", status_code=307)
+        
+        # Get the host from the request for proper domain setting
+        host = request.headers.get("host", "").split(":")[0]
+
+        # Set cookie with proper attributes for local development
+        # In local dev, we need to ensure we're not using secure flag and proper domain
         response.set_cookie(
             key="access_token",
-            value=f"Bearer {access_token}",
+            value=access_token,
             httponly=True,
-            secure=is_secure,  # Set secure=True only in non-local environments
-            samesite="lax" if is_secure else "strict",
-            max_age=settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60,
+            # Disable secure for local development to ensure cookie is sent over http
+            secure=False,
+            # Use lax for better compatibility in local development
+            samesite="lax",
+            # Ensure cookie is accessible across all paths
             path="/",
+            # Set max age
+            max_age=settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60
         )
-
+        
+        print(f"Setting access_token cookie with path=/ (domain not set)")
+        print(f"Cookie value preview: {access_token[:10]}...")
         return response
     else:
         # 💻 API Client: Return tokens in JSON
@@ -244,7 +275,7 @@ async def auth_callback(
             access_token=access_token,
             refresh_token=refresh_token,
             token_type="bearer",
-            expires_in=settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60
+            expires_in=settings.ACCESS_TOKEN_EXPIRE_MINUTES
         )
         return token_response
 
@@ -303,14 +334,15 @@ async def refresh_token(
         permissions = await get_user_permissions(user.id, db)
         
         # Create new access token
-        new_access_token = create_access_token(
+        new_access_token = await create_access_token(
+            user_id=user.id,
             subject=email,
             permissions=permissions,
             expires_delta=timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
         )
         
         # Create new refresh token
-        new_refresh_token = create_refresh_token(subject=email)
+        new_refresh_token = await create_refresh_token(user_id=user.id, subject=email)
         
         return Token(
             access_token=new_access_token,

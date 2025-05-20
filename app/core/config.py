@@ -1,12 +1,14 @@
 from pydantic_settings import BaseSettings
-from pydantic import ConfigDict, computed_field
+from pydantic import ConfigDict, computed_field, Field
 import os
-from typing import List
+from typing import List, Union
 
 class Settings(BaseSettings):
     model_config = ConfigDict(extra="allow", env_file=".env", case_sensitive=True)
-
+    
+    DEBUG: bool = False
     PROJECT_NAME: str = "BlindspotX Authentication"
+    VERSION: str = "0.1.0"
     API_V1_STR: str = "/api"
     SECRET_KEY: str = "super-secret-key-change-in-prod"
     ALGORITHM: str = "HS256"
@@ -20,15 +22,38 @@ class Settings(BaseSettings):
     MS_CLIENT_SECRET: str = ""
     MS_TENANT_ID: str = ""
     MS_REDIRECT_URI: str = "http://localhost:8000/api/auth/callback"
-    MS_SCOPES: List[str] = ["User.Read"]
+    MS_SCOPES: Union[str, List[str]] = Field(
+        default="https://graph.microsoft.com/User.Read"
+    )
 
     USE_KEY_VAULT: bool = False
     KEY_VAULT_NAME: str = ""
     ENVIRONMENT: str = ""
 
+    # Drift Detection settings
+    DRIFT_DETECTION_ENABLED: bool = False
+    DRIFT_CHECK_INTERVAL: int = 3600  # Default to hourly checks (in seconds)
+    DRIFT_RETENTION_POLICY: str = "medium_term"
+    DRIFT_ALERT_ENABLED: bool = False
+    DRIFT_SECURITY_ALERTS: bool = False
+
     @computed_field
     @property
     def MS_AUTHORITY(self) -> str:
         return f"https://login.microsoftonline.com/{self.MS_TENANT_ID}"
+
+    @computed_field
+    @property
+    def PARSED_MS_SCOPES(self) -> List[str]:
+        """Parse MS_SCOPES from space-separated string if needed"""
+        if isinstance(self.MS_SCOPES, str):
+            return self.MS_SCOPES.split()
+        return self.MS_SCOPES
+
+    @computed_field
+    @property
+    def REFRESH_TOKEN_EXPIRE_MINUTES(self) -> int:
+        """Convert refresh token expiry from days to minutes"""
+        return self.REFRESH_TOKEN_EXPIRE_DAYS * 24 * 60
 
 settings = Settings()

@@ -12,10 +12,12 @@ class Token(BaseModel):
 
 
 class TokenPayload(BaseModel):
-    sub: Optional[str] = None  # Subject (typically user ID or email)
-    exp: int  # Expiration time (UTC timestamp)
-    iat: Optional[int] = None  # Issued at time
+    sub: str  # Subject (typically user email)
+    uid: str  # User ID
+    exp: int  # Expiration time (integer UTC timestamp)
+    iat: int  # Issued at time (integer UTC timestamp)
     type: str  # Token type (access or refresh)
+    jti: str  # JWT ID (unique identifier for this token)
     permissions: Optional[List[str]] = None  # User permissions
 
 
