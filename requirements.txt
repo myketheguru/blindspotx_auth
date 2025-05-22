@@ -24,3 +24,4 @@ opentelemetry-exporter-otlp
 starlette-exporter
 redis
 pytest
+celery[redis]

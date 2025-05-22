@@ -1,7 +1,7 @@
 from pydantic_settings import BaseSettings
 from pydantic import ConfigDict, computed_field, Field
 import os
-from typing import List, Union
+from typing import List, Union, Optional
 
 class Settings(BaseSettings):
     model_config = ConfigDict(extra="allow", env_file=".env", case_sensitive=True)
@@ -36,6 +36,40 @@ class Settings(BaseSettings):
     DRIFT_RETENTION_POLICY: str = "medium_term"
     DRIFT_ALERT_ENABLED: bool = False
     DRIFT_SECURITY_ALERTS: bool = False
+
+     # Celery Configuration
+    CELERY_BROKER_URL: str = Field(
+        default="redis://localhost:6379/0",
+        description="Celery broker URL (Redis recommended)"
+    )
+    CELERY_RESULT_BACKEND: str = Field(
+        default="redis://localhost:6379/0", 
+        description="Celery result backend URL"
+    )
+    
+    # Drift Detection Settings
+    DRIFT_DETECTION_INTERVAL: int = Field(
+        default=1800,  # 30 minutes
+        description="Drift detection interval in seconds"
+    )
+    DRIFT_RETENTION_DAYS: int = Field(
+        default=90,
+        description="Number of days to retain drift snapshots"
+    )
+    DRIFT_BATCH_SIZE: int = Field(
+        default=100,
+        description="Batch size for processing drift items"
+    )
+    
+    # Notification Settings
+    DRIFT_ALERT_WEBHOOK: Optional[str] = Field(
+        default=None,
+        description="Webhook URL for drift alerts"
+    )
+    DRIFT_ALERT_EMAIL: Optional[str] = Field(
+        default=None,
+        description="Email address for drift alerts"
+    )
 
     @computed_field
     @property

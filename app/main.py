@@ -4,6 +4,8 @@ from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse, Resp
 from fastapi.templating import Jinja2Templates
 from fastapi.exception_handlers import http_exception_handler
 
+from app.core.celery_app import celery_app
+
 from sqlmodel import select 
 
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -12,7 +14,7 @@ import logging
 import time
 from uuid import UUID
 
-from app.api.routes import auth, users, rbac, drift as drift_router
+from app.api.routes import auth, users, rbac, drift as drift_router, drift_celery
 from app.core.config import settings
 from app.core.database import create_db_and_tables, get_db
 from app.models.user import Permission, User, Role, get_user_permissions
@@ -32,6 +34,8 @@ logging.basicConfig(
         logging.StreamHandler()
     ]
 )
+
+logger = logging.getLogger(__name__)
 
 # Create FastAPI app
 app = FastAPI(
@@ -164,7 +168,7 @@ async def get_current_user_html(request: Request, db: AsyncSession = Depends(get
 app.include_router(auth.router, prefix="/api/auth", tags=["Authentication"])
 app.include_router(users.router, prefix="/api/users", tags=["Users"])
 app.include_router(rbac.router, prefix="/api/rbac", tags=["Roles And Permissions"])
-app.include_router(drift_router.router, prefix="/drift", tags=["Drift Detection"])
+app.include_router(drift_celery.router, prefix="/api/drift", tags=["Drift Detection"])
 
 
 # Base permissions to seed
@@ -185,12 +189,14 @@ BASE_PERMISSIONS = [
 async def startup_event():
     await create_db_and_tables()
     await seed_base_permissions()
-    asyncio.create_task(run_drift_detection_job())
+    # asyncio.create_task(run_drift_detection_job())
+     # Celery will handle the background tasks, no need to start them here
+    logger.info("Application started - Celery tasks will handle drift detection")
 
-async def run_drift_detection_job():
-    while True:
-        await detect_drift()
-        await asyncio.sleep(1800)  # 30 minutes
+# async def run_drift_detection_job():
+#     while True:
+#         await detect_drift()
+#         await asyncio.sleep(1800)  # 30 minutes
 
 async def seed_base_permissions():
     """Seed base permissions into the database"""
@@ -492,17 +498,28 @@ async def roles_delete_confirm(
     )
 
 
+# Update the existing HTML route for drift dashboard
 @app.get("/ui", response_class=HTMLResponse)
 async def drift_dashboard(
     request: Request,
-    user = Depends(get_current_user_html)  # Use the custom HTML dependency
+    user = Depends(get_current_user_html)
 ):
-    """Serve drift dashboard UI"""
-    # If we get here, user is authenticated or redirected to login
+    """Serve drift dashboard UI with Celery integration"""
     if isinstance(user, RedirectResponse):
         return user
     
-    return templates.TemplateResponse("drift.html", {"request": request, "user": user})
+    # You can add context about Celery task status here
+    celery_inspect = celery_app.control.inspect()
+    worker_stats = celery_inspect.stats()
+    
+    dashboard_context = {
+        "request": request, 
+        "user": user,
+        "celery_workers_active": len(worker_stats) if worker_stats else 0,
+        "system_healthy": bool(worker_stats)
+    }
+    
+    return templates.TemplateResponse("drift.html", dashboard_context)
 
 
 @app.get("/auth-debug", response_class=HTMLResponse)

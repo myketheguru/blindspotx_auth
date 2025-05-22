@@ -8,3 +8,49 @@ services:
       - .env
     volumes:
       - .:/app
+  
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+    
+  celery_worker:
+    build: .
+    command: celery -A app.core.celery_app worker --loglevel=info --queues=drift_detection,drift_analysis,maintenance,notifications
+    volumes:
+      - .:/app
+    depends_on:
+      - redis
+      # - db
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    
+  celery_beat:
+    build: .
+    command: celery -A app.core.celery_app beat --loglevel=info
+    volumes:
+      - .:/app
+    depends_on:
+      - redis
+      # - db
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+      
+  celery_flower:
+    build: .
+    command: celery -A app.core.celery_app flower --port=5555
+    ports:
+      - "5555:5555"
+    depends_on:
+      - redis
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+
+volumes:
+  redis_data:
